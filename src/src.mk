@@ -91,4 +91,8 @@ CSRC += $(GLOBAL_PATH)/src/ircom/ircomTools.c
 CSRC += $(GLOBAL_PATH)/src/ircom/ircomMessages.c
 CSRC += $(GLOBAL_PATH)/src/ircom/ircomSend.c
 CSRC += $(GLOBAL_PATH)/src/ircom/transceiver.c
+CSRC += $(GLOBAL_PATH)/src/grid.c
+CSRC += $(GLOBAL_PATH)/src/ir_sensors.c
+CSRC += $(GLOBAL_PATH)/src/pi_regulator.c
+CSRC += $(GLOBAL_PATH)/src/process_image.c
 

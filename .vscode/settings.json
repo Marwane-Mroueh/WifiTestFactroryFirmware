@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "hal.h": "c",
+        "memory_protection.h": "c",
+        "random": "c",
+        "pi_regulator.h": "c",
+        "process_image.h": "c",
+        "ir_sensors.h": "c",
+        "asercom.h": "c",
+        "ircommessages.h": "c",
+        "uc_usage.h": "c"
+    }
+}

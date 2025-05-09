@@ -148,7 +148,8 @@ build/obj/main.o: src/main.c \
  src/cmp_mem_access/cmp_mem_access.h src/cmp/cmp.h src/uc_usage.h \
  src/ircom/ircom.h src/ircom/ircomReceive.h src/ircom/ircomMessages.h \
  src/ircom/ircomSend.h src/ircom/transceiver.h src/grid.h \
- src/ir_sensors.h src/pi_regulator.h src/process_image.h
+ src/ir_sensors.h src/pi_regulator.h src/process_image.h \
+ src/camera/dcmi_camera.h
 
 c:\users\marwa\onedrive\documents\ide_robots\epuck2_utils\arm_gcc_toolchain\arm-none-eabi\include\stdio.h:
 
@@ -585,3 +586,5 @@ src/ir_sensors.h:
 src/pi_regulator.h:
 
 src/process_image.h:
+
+src/camera/dcmi_camera.h:

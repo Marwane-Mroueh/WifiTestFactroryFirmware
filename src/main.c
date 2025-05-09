@@ -56,6 +56,7 @@
 #include "ir_sensors.h"
 #include "pi_regulator.h"
 #include "process_image.h"
+#include <camera/dcmi_camera.h>
 uint8_t stop_loop = 0;
 uint8_t demo15_state = 0;
 uint8_t demo15_state_1 = 0;
@@ -180,9 +181,7 @@ static THD_FUNCTION(selector_thd, arg)
 				{
 					chThdSleepMilliseconds(1);
 				}
-
 				demo15_state = 1;
-				demo15_state_1 = 1;
 				break;
 
 			case 1:
@@ -193,11 +192,6 @@ static THD_FUNCTION(selector_thd, arg)
 			}
 			break;
 		}
-		chThdSleepMilliseconds(100);
-	}
-	while (1)
-	{
-		chThdSleepMilliseconds(1000);
 	}
 }
 
@@ -235,7 +229,7 @@ int main(void)
 	playMelodyStart();
 	playSoundFileStart();
 	ground_start();
-	behaviors_start();
+	// behaviors_start();
 	grid_move_start();
 	ir_sensors_start();
 
@@ -261,18 +255,21 @@ int main(void)
 		if (get_object_found() == true && !one_time)
 		{
 			spi_image_transfer_disable();
-			// set_end_asercom2(true);
+			spi_comm_suspend();
+
 			left_motor_set_speed(0);
 			right_motor_set_speed(0);
-
 			set_enabled_motors(true);
+
+			dcmi_release();
+			dcmi_prepare();
+
 			process_image_start();
 			pi_regulator_start();
 
 			one_time = true;
-			demo15_state_1 = 0;
 		}
-		if (get_object_found() == 0 && one_time == 1)
+		if (get_object_found() == 0 && one_time == 1 && one_time_2 == 0)
 		{
 			if (one_time_2 == 0)
 			{
@@ -280,8 +277,11 @@ int main(void)
 				right_motor_set_speed(0);
 			}
 			one_time_2 = true;
-			demo15_state = 0;
-			stop_loop = 0;
+			dcmi_release();
+			cam_advanced_config(FORMAT_COLOR, 0, 0, 640, 480, SUBSAMPLING_X4, SUBSAMPLING_X4);
+			dcmi_prepare();
+			spi_image_transfer_enable();
+			spi_comm_resume();
 		}
 	}
 }

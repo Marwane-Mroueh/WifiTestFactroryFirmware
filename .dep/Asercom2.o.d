@@ -143,7 +143,8 @@ build/obj/Asercom2.o: src/epuck1x/Asercom2.c \
  src/epuck1x/camera/fast_2_timer/e_po8030d.h \
  src/epuck1x/camera/fast_2_timer/e_poxxxx.h src/epuck1x/codec/e_sound.h \
  src/epuck1x/utility/utility.h src/epuck1x/acc_gyro/e_lsm330.h \
- src/pi_regulator.h src/ir_sensors.h src/epuck1x/I2C/e_I2C_protocol.h \
+ src/pi_regulator.h src/ir_sensors.h src/motors.h \
+ src/epuck1x/I2C/e_I2C_protocol.h \
  src/epuck1x/motor_led/advance_one_timer/e_remote_control.h \
  src/epuck1x/DataEEPROM.h src/epuck1x/memory.h
 
@@ -516,6 +517,8 @@ src/epuck1x/acc_gyro/e_lsm330.h:
 src/pi_regulator.h:
 
 src/ir_sensors.h:
+
+src/motors.h:
 
 src/epuck1x/I2C/e_I2C_protocol.h:
 

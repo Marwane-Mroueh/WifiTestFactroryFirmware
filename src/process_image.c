@@ -13,7 +13,7 @@
 #include "ir_sensors.h"
 
 static float distance_cm = 0;
-static uint16_t line_position = IMAGE_BUFFER_SIZE / 2; // middle
+static uint16_t line_position = IMAGE_BUFFER_SIZE / 2; // middle (160 pixels wide)
 bool config_cam_pid = false;
 
 // semaphore
@@ -25,7 +25,6 @@ static BSEMAPHORE_DECL(image_ready_sem, TRUE);
  */
 uint16_t extract_line_width(uint8_t *buffer)
 {
-
     uint16_t i = 0, begin = 0, end = 0, width = 0;
     uint8_t stop = 0, wrong_line = 0, line_not_found = 0;
     uint64_t mean = 0; // attention changement
@@ -119,17 +118,12 @@ static THD_FUNCTION(CaptureImage, arg)
     chRegSetThreadName(__FUNCTION__);
     (void)arg;
 
-    // dcmi_unprepare();
-    // chprintf((BaseSequentialStream *)&SDU1, "0\r\n");
-    //  Takes pixels 0 to IMAGE_BUFFER_SIZE of the lines USED_LINE and USED_LINE + 1
-    cam_advanced_config(PO8030_FORMAT_RGB565, 0, USED_LINE, IMAGE_BUFFER_SIZE, 2,
-                        SUBSAMPLING_X1, SUBSAMPLING_X1);
-    // dcmi_enable_double_buffering();
-    // dcmi_set_capture_mode(CAPTURE_ONE_SHOT);
-    //  dcmi_prepare();
+    // Configure camera with resolution of 160x120 and no subsampling (1)
+    // cam_advanced_config(PO8030_FORMAT_RGB565, 0, 0, 160, 120, SUBSAMPLING_X1, SUBSAMPLING_X1);
+
     while (1)
     {
-        if (get_mode_one_on() == 1)
+        if (get_mode_one_on() == 1 && get_object_found() == true)
         {
             // starts a capture
             dcmi_capture_start();
@@ -137,6 +131,11 @@ static THD_FUNCTION(CaptureImage, arg)
             wait_image_ready();
             // signals an image has been captured
             chBSemSignal(&image_ready_sem);
+            // chThdSleepMilliseconds(100);
+        }
+        else
+        {
+            chThdSleepMilliseconds(100);
         }
     }
 }
@@ -144,32 +143,35 @@ static THD_FUNCTION(CaptureImage, arg)
 static THD_WORKING_AREA(waProcessImage, 1024);
 static THD_FUNCTION(ProcessImage, arg)
 {
-
     chRegSetThreadName(__FUNCTION__);
     (void)arg;
 
     uint8_t *img_buff_ptr;
-    uint8_t image[IMAGE_BUFFER_SIZE] = {0};
+    uint8_t image[160 * 2] = {0}; // Buffer size adjusted to 160*2 (two lines of the image)
     uint16_t lineWidth = 0;
 
     while (1)
     {
-        if (get_mode_one_on() == 1)
+        if (get_mode_one_on() == 1 && get_object_found() == true)
         {
             // waits until an image has been captured
             chBSemWait(&image_ready_sem);
             // gets the pointer to the array filled with the last image in RGB565
             img_buff_ptr = dcmi_get_last_image_ptr();
 
-            // Extracts only the red pixels
-            for (uint16_t i = 0; i < (2 * IMAGE_BUFFER_SIZE); i += 2)
+            // Extracts only the red pixels from the USED_LINE and USED_LINE+1
+            // Assuming that USED_LINE is a constant representing the line number (e.g., 60)
+            // Image buffer will be fetched for the two lines: USED_LINE and USED_LINE+1
+            uint16_t start_index = USED_LINE * 320;     // Start of USED_LINE in the buffer
+            uint16_t end_index = (USED_LINE + 1) * 320; // Start of USED_LINE + 1 in the buffer
+
+            // Copy the two lines (USED_LINE and USED_LINE+1)
+            for (uint16_t i = start_index; i < end_index; i += 2) // 320 bytes per line for RGB565 format
             {
-                // extracts 5 MSbits of the MSbyte (First byte in big-endian format)
-                // takes nothing from the second byte
-                image[i / 2] = (uint8_t)img_buff_ptr[i] & 0xF8;
+                image[(i - start_index) / 2] = (uint8_t)img_buff_ptr[i] & 0xF8; // Red pixel extraction
             }
 
-            // search for a line in the image and gets its width in pixels
+            // search for a line in the image and get its width in pixels
             lineWidth = extract_line_width(image);
 
             // converts the width into a distance between the robot and the camera
@@ -177,6 +179,11 @@ static THD_FUNCTION(ProcessImage, arg)
             {
                 distance_cm = PXTOCM / lineWidth;
             }
+            // chThdSleepMilliseconds(100);
+        }
+        else
+        {
+            chThdSleepMilliseconds(100);
         }
     }
 }

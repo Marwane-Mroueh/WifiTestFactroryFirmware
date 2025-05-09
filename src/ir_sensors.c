@@ -9,7 +9,7 @@
 
 #include "main.h"
 #include "ir_sensors.h"
-// #include "pi_regulator.h"
+#include "pi_regulator.h"
 #include "grid.h"
 
 #define IR_ROTATION_COEF 1.06 /*Determined experimentally to ensure a 90° rotation */
@@ -45,7 +45,7 @@ static THD_FUNCTION(IRPrintThread, arg)
     int proximity_counter = 0;
     while (1)
     {
-        if (object_found == false /*&& get_mode_one_on()*/)
+        if (object_found == false && get_mode_one_on())
         {
             prox_value = 0;
             for (int i = IR5_ID; i <= IR8_ID; i++)

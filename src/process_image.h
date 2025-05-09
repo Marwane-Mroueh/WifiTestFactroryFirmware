@@ -2,10 +2,10 @@
 #define PROCESS_IMAGE_H
 
 // Specify the 2 consecutive lines used for tracking the black line
-#define USED_LINE 200 // Must be inside [0..478]
+#define USED_LINE 60 // Must be inside [0..478]
 
 // constants for the PI Regulator/Camera processing
-#define IMAGE_BUFFER_SIZE 640
+#define IMAGE_BUFFER_SIZE 160
 #define WIDTH_SLOPE 5
 #define MIN_LINE_WIDTH 40
 #define ROTATION_THRESHOLD 10

@@ -110,7 +110,7 @@ build/obj/grid.o: src/grid.c ChibiOS//os/rt/include/ch.h \
  c:\users\marwa\onedrive\documents\ide_robots\epuck2_utils\arm_gcc_toolchain\arm-none-eabi\include\stdlib.h \
  c:\users\marwa\onedrive\documents\ide_robots\epuck2_utils\arm_gcc_toolchain\arm-none-eabi\include\machine\stdlib.h \
  c:\users\marwa\onedrive\documents\ide_robots\epuck2_utils\arm_gcc_toolchain\arm-none-eabi\include\alloca.h \
- src/grid.h src/ir_sensors.h
+ src/grid.h src/ir_sensors.h src/pi_regulator.h
 
 ChibiOS//os/rt/include/ch.h:
 
@@ -397,3 +397,5 @@ c:\users\marwa\onedrive\documents\ide_robots\epuck2_utils\arm_gcc_toolchain\arm-
 src/grid.h:
 
 src/ir_sensors.h:
+
+src/pi_regulator.h:

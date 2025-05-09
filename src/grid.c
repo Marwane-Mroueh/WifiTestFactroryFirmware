@@ -8,7 +8,7 @@
 #include "main.h"
 #include "grid.h"
 #include "ir_sensors.h"
-// #include "pi_regulator.h"
+#include "pi_regulator.h"
 
 #define GRID_LENGTH 40
 #define GRID_ANGLE 6
@@ -24,12 +24,12 @@ static THD_FUNCTION(GridMove, arg)
     (void)arg;
     while (1)
     {
-        if (!get_object_found() && !get_object_close() /*&& get_mode_one_on()*/)
+        if (!get_object_found() && !get_object_close() && get_mode_one_on())
         {
             for (int i = 0; i < GRID_LENGTH; i++) // straight line
             {
                 check_pause_request();
-                if (/*get_mode_one_on()*/ true && !get_object_found() && !get_object_close())
+                if (get_mode_one_on() && !get_object_found() && !get_object_close())
                 {
                     right_motor_set_speed(GRID_MOTOR_SPEED);
                     left_motor_set_speed(GRID_MOTOR_SPEED);
@@ -44,7 +44,7 @@ static THD_FUNCTION(GridMove, arg)
             for (int i = 0; i < GRID_ANGLE; i++) // 90 degree turn
             {
                 check_pause_request();
-                if (/*get_mode_one_on()*/ true && !get_object_found() && !get_object_close())
+                if (get_mode_one_on() && !get_object_found() && !get_object_close())
                 {
                     right_motor_set_speed(GRID_MOTOR_SPEED * ROTATION_CORRECTION_COEF);
                     left_motor_set_speed(-GRID_MOTOR_SPEED * ROTATION_CORRECTION_COEF);
@@ -56,6 +56,10 @@ static THD_FUNCTION(GridMove, arg)
                 }
                 chThdSleepMilliseconds(100);
             }
+        }
+        else
+        {
+            chThdSleepMilliseconds(100);
         }
     }
 }

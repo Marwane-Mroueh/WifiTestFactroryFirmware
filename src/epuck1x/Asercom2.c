@@ -7,6 +7,7 @@
 
 #define IMAGE_HEADER_SIZE 3 // mode, width, height
 #define IMAGE_MAX_SIZE (BUFFER_SIZE - IMAGE_HEADER_SIZE)
+int compteur = 0;
 
 #include <hal.h>
 #include "../usbcfg.h"
@@ -46,6 +47,7 @@
 #include <acc_gyro/e_lsm330.h>
 #include <pi_regulator.h>
 #include <ir_sensors.h>
+#include <motors.h>
 #ifdef CLIFF_SENSORS
 #ifndef FLOOR_SENSORS
 #define FLOOR_SENSORS
@@ -609,8 +611,13 @@ int run_asercom2(void)
                     }
                     else
                     { // Set speed.
-                      // e_set_speed_left(speedl);
-                      // e_set_speed_right(speedr);
+                        if (get_mode_one_on() == 0)
+                        {
+                            e_set_speed_left(speedl);
+                            e_set_speed_right(speedr);
+                            // left_motor_set_speed(speedl);
+                            // right_motor_set_speed(speedr);
+                        }
                     }
 
                     // Set LEDs.
@@ -675,6 +682,7 @@ int run_asercom2(void)
                         // playMelody(MARIO, ML_FORCE_CHANGE, NULL); // e_play_sound(0, 2112);//8/////////
                         set_object_found(false);
                         set_object_close(false);
+                        set_mode_one_on(false);
                     }
                     if (rx_buff[18] & 0x02)
                     {
@@ -696,6 +704,7 @@ int run_asercom2(void)
                     {
                         e_close_sound();
                         stopCurrentMelody();
+                        set_mode_one_on(true);
                     }
                     break;
 
@@ -998,9 +1007,13 @@ int run_asercom2(void)
                         while (e_getchar_uart2(&c2) == 0)
                             ;
                     }
-                    speedr = (unsigned char)c1 + ((unsigned int)c2 << 8);
-                    // e_set_speed_left(speedl);
-                    // e_set_speed_right(speedr);
+                    speedr = (unsigned char)c1 + ((unsigned int)c2 << 8); /////////////////////
+                    if (get_mode_one_on() == false)
+                    {
+                        // e_set_speed_left(speedl);
+                        // e_set_speed_right(speedr);
+                    }
+
                     break;
                 case 'E': // get motor speed
                     buffer[i++] = speedl & 0xff;
@@ -1031,7 +1044,7 @@ int run_asercom2(void)
                     }
                     break;
 
-                case 'I': // get camera image
+                case 'I': /*// get camera image
                     if (gumstix_connected == 0 && (get_object_found() == 0))
                     {
                         e_poxxxx_launch_capture(&buffer[i + 3]);
@@ -1041,7 +1054,7 @@ int run_asercom2(void)
                         buffer[i++] = (char)cam_heigth & 0xff;
                         cam_start_index = i;
                         i += cam_size;
-                    }
+                    }*/
                     break;
                 case 'L': // set LED
                     if (gumstix_connected)
@@ -1153,8 +1166,12 @@ int run_asercom2(void)
                             ;
                     }
                     positionr = (unsigned char)c1 + ((unsigned int)c2 << 8);
-                    // e_set_steps_left(positionl);
-                    // e_set_steps_right(positionr);
+                    if (get_mode_one_on() == false)
+                    {
+                        // e_set_steps_left(positionl);
+                        // e_set_steps_right(positionr);
+                    }
+
                     break;
                 case 'Q': // read encoders
                     n = e_get_steps_left();
@@ -1670,7 +1687,7 @@ int run_asercom2(void)
                 }
                 break;
             case 'J': // set camera parameter see also cam library
-                if (gumstix_connected == 0 && get_object_found() == 0)
+                /*if (gumstix_connected == 0 && get_object_found() == 0)
                 {
                     cam_x1 = -1;
                     cam_y1 = -1;
@@ -1705,7 +1722,7 @@ int run_asercom2(void)
                     { // Communicate with the pc (usb).
                         uart2_send_static_text("j\r\n");
                     }
-                }
+                }*/
                 break;
             case 'K': // calibrate proximity sensors
                 if (gumstix_connected)

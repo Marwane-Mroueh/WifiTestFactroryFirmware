@@ -95,9 +95,9 @@ static THD_FUNCTION(PiRegulator, arg)
 
     while (1)
     {
+        time = chVTGetSystemTime();
         if (mode_one_on && get_object_found())
         {
-            time = chVTGetSystemTime();
             // computes the speed to give to the motors
             // distance_cm is modified by the image processing thread
             speed = pi_regulator(get_distance_cm(), get_goal_distance() * 1.5);
